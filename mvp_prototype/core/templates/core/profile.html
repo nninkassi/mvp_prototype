@@ -1,0 +1,90 @@
+{% extends 'core/base.html' %}
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<h1 class="fw-bold mb-5">Профиль</h1>
+
+<div class="row g-5">
+    <!-- Левая колонка: Данные профиля -->
+    <div class="col-lg-4">
+        <h5 class="fw-bold mb-4">Данные профиля</h5>
+
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Email</label>
+                    <input type="text" class="form-control" value="{{ user.email }}" readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Имя</label>
+                    <input type="text" class="form-control" value="{{ user.name }}" readonly>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Правая колонка: Заказы (скрыта для Администратора) -->
+    {% if user.role and user.role.name != 'seller' %}
+    <div class="col-lg-8">
+        <h5 class="fw-bold mb-4">Заказы</h5>
+
+        {% if orders %}
+        {% for order in orders %}
+        <div class="card border shadow-sm rounded-3 mb-3">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h6 class="fw-bold mb-2">Заказ №{{ order.id }}</h6>
+                        <small class="text-muted">
+                            {{ order.created_at|date:"d.m.Y" }}
+                        </small>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="d-flex gap-2 flex-wrap">
+                            {% for item in order.items.all %}
+                            <div class="bg-light rounded-1 d-flex align-items-center justify-content-center"
+                                style="width: 49px; height: 70px;">
+                                {% if item.product.image_url %}
+                                <img src="{{ item.product.image_url }}" alt="{{ item.product.title }}" class="rounded-2"
+                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                <span class="text-muted small">Нет фото</span>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        <p class="small text-muted mb-1">Статус</p>
+                        <p class="fw-medium mb-3">{{ order.get_status_display }}</p>
+                        <h5 class="fw-bold mb-0">{{ order.total_cost }} ₽</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="card border-0 shadow-sm rounded-3 text-center py-5">
+            <div class="card-body">
+                <p class="text-muted mb-0">Заказов пока нет.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    <form method="POST"
+        onsubmit="return confirm('Вы уверены? Это действие необратимо, ваши данные будут анонимизированы.');">
+        {% csrf_token %}
+        <button type="submit" class="btn"
+            style="background-color: transparent; border: 1px solid #000000; color: #000000; transition: all 0.2s ease;"
+            onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='transparent'">
+            Удалить аккаунт
+        </button>
+    </form>
+</div>
+{% endblock %}

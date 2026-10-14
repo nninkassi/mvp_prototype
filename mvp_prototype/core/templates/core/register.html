@@ -1,0 +1,85 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+
+            <!-- Заголовок -->
+            <div class="text-center mb-3">
+                <h1 class="h3 fw-bold text-dark mb-1">Регистрация</h1>
+            </div>
+
+            <!-- Карточка регистрации -->
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4 p-md-4">
+
+                    <!-- Сообщения об ошибках -->
+                    {% if error %}
+                    <div class="alert alert-danger alert-dismissible fade show mb-3 rounded-3" role="alert">
+                        ⚠️ {{ error }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endif %}
+
+                    <!-- Форма регистрации -->
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label text-muted small">Email</label>
+                                    <input type="email" class="form-control rounded-3" id="email" name="email" required
+                                        placeholder="you@example.ru" value="{{ request.POST.email|default:'' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="name" class="form-label text-muted small">Имя</label>
+                                    <input type="text" class="form-control rounded-3" id="name" name="name" required
+                                        placeholder="Ваше имя" value="{{ request.POST.name|default:'' }}">
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label text-muted small">Пароль</label>
+                            <input type="password" class="form-control rounded-3" id="password" name="password"
+                                required>
+                        </div>
+
+                        <!-- Чекбокс согласия -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input rounded-1" type="checkbox" name="consent" id="consentCheck"
+                                required>
+                            <label class="form-check-label small text-muted" for="consentCheck">
+                                Я согласен на
+                                <a href="{% url 'policy' %}" target="_blank" class="text-decoration-none">обработку
+                                    персональных данных</a>
+                                в соответствии с политикой сервиса
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark btn-lg w-100 rounded-3 fw-medium">
+                            Создать аккаунт
+                        </button>
+                    </form>
+
+                    <!-- Ссылка на вход -->
+                    <div class="text-center mt-3">
+                        <p class="text-muted mb-0 small">
+                            Уже есть аккаунт?
+                            <a href="{% url 'login' %}" class="text-decoration-none fw-medium">Войти</a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

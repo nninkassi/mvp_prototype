@@ -1,0 +1,93 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Оплата заказа #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white text-center py-4 border-bottom">
+                    <h4 class="fw-bold mb-0">Оплата заказа</h4>
+                    <p class="text-muted small mb-0">Платежный шлюз</p>
+                </div>
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                        <span class="text-muted">Заказ:</span>
+                        <span class="fw-bold">#{{ order.id }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4 pb-3 border-bottom">
+                        <span class="text-muted">К оплате:</span>
+                        <span class="fw-bold fs-4">{{ order.total_cost }} ₽</span>
+                    </div>
+
+                    <!-- Форма ввода карты -->
+                    <form id="paymentForm" onsubmit="processPayment(event)">
+
+                        <!-- Номер карты -->
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Номер карты</label>
+                            <input type="text" class="form-control" name="card_number" placeholder="0000 0000 0000 0000"
+                                value="1234 5678 1234 5678" maxlength="19" readonly>
+                        </div>
+
+                        <!-- Имя держателя -->
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Имя держателя карты</label>
+                            <input type="text" class="form-control text-uppercase" name="card_holder"
+                                placeholder="IVAN IVANOV" value="IVAN IVANOV" readonly>
+                        </div>
+
+                        <!-- Срок действия и CVV в одной строке -->
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label small text-muted">Срок действия</label>
+                                <input type="text" class="form-control" name="expiry_date" placeholder="MM/YY"
+                                    value="12/28" maxlength="5" readonly>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label small text-muted">CVV/CVC</label>
+                                <input type="password" class="form-control" name="cvv" placeholder="•••" value="123"
+                                    maxlength="3" readonly>
+                            </div>
+                        </div>
+
+
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" id="payButton" class="btn btn-success btn-lg fw-bold">
+                                Оплатить {{ order.total_cost }} ₽
+                            </button>
+                            <a href="{% url 'profile' %}"
+                                class="btn btn-link text-muted text-decoration-none">Отмена</a>
+                        </div>
+                    </form>
+
+                    <!-- Индикатор загрузки (скрыт по умолчанию) -->
+                    <div id="processing" class="text-center mt-4 d-none">
+                        <div class="spinner-border text-primary mb-2" role="status"></div>
+                        <p class="text-muted">Обработка транзакции...</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function processPayment(e) {
+        e.preventDefault();
+        // Скрываем кнопку, показываем спиннер
+        document.getElementById('payButton').classList.add('d-none');
+        document.getElementById('processing').classList.remove('d-none');
+
+        // Имитация задержки сети (2 секунды), затем редирект на успех
+        setTimeout(function () {
+            // Перенаправляем на страницу успеха Django
+            window.location.href = "{% url 'success' %}?order_id={{ order.id }}";
+        }, 2000);
+    }
+</script>
+{% endblock %}

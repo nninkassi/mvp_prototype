@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Корзина</h2>
+    {% if cart_items %}
+    {% endif %}
+</div>
+
+{% if cart_items %}
+<div class="row g-4">
+    <!-- Список товаров -->
+    <div class="col-lg-8">
+        {% for item in cart_items %}
+        <div class="card border-0 shadow-sm rounded-3 mb-3">
+            <div class="row g-0 align-items-center">
+                <div class="col-md-2 p-2">
+                    {% if item.product.image_url %}
+                    <img src="{{ item.product.image_url }}" class="img-fluid rounded-2" alt="{{ item.product.title }}"
+                        style="height: 150px; object-fit: cover; width: 105px">
+                    {% else %}
+                    <div class="bg-light rounded-2 d-flex align-items-center justify-content-center text-muted"
+                        style="height: 120px;">Нет фото</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <div class="card-body ps-0">
+                        <h5 class="fw-bold mb-1">{{ item.product.title }}</h5>
+                        <p class="text-muted small mb-2">Автор: {{ item.product.author }}</p>
+                        <p class="mb-1 small">Цена за шт: <span class="fw-medium">{{ item.product.price }} ₽</span></p>
+                        <p class="mb-0 small text-muted">Количество: {{ item.quantity }} шт.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 text-end p-1">
+                    <h5 class="fw-bold mb-0">{{ item.total_price }} ₽</h5>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Итого к оплате -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 sticky-top" style="top: 20px; z-index: 10;">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Итого к оплате</h5>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="text-muted">Сумма заказа:</span>
+                    <span class="fs-4 fw-bold">{{ total }} ₽</span>
+                </div>
+                <a href="{% url 'checkout' %}" class="btn btn-dark btn-lg w-100 rounded-3">Оформить заказ</a>
+                <div class="mt-3 text-center">
+                    <a href="{% url 'catalog' %}" class="text-decoration-none text-muted small">← Вернуться к
+                        покупкам</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card border-0 shadow-sm rounded-3 text-center py-5">
+    <div class="card-body">
+        <h4 class="fw-bold mb-3">Корзина пуста</h4>
+        <p class="text-muted mb-4">Добавьте товары из каталога, чтобы оформить заказ</p>
+        <a href="{% url 'catalog' %}" class="btn btn-outline-dark rounded-pill px-4">Перейти в каталог</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

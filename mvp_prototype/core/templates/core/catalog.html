@@ -1,0 +1,94 @@
+{% extends 'core/base.html' %}
+{% load cart_extras %}
+{% block title %}Каталог книг{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Левый сайдбар: Категории -->
+    <div class="col-lg-3">
+        <h5 class="fw-bold mb-3">Категории</h5>
+        <div class="list-group list-group-flush">
+            <a href="{% url 'catalog' %}"
+                class="list-group-item list-group-item-action border-0 px-0 py-2 {% if not active_category %}fw-bold text-dark{% else %}text-muted{% endif %}">Все</a>
+
+            {% for cat in categories %}
+            <a href="?category={{ cat.id }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"
+                class="list-group-item list-group-item-action border-0 px-0 py-2 {% if active_category == cat.id %}fw-bold text-dark{% else %}text-muted{% endif %}">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Правая часть: Поиск и товары -->
+    <div class="col-lg-9">
+        <!-- Поиск -->
+        <form method="get" action="{% url 'catalog' %}" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control rounded-start-pill border-end-0" placeholder="Поиск"
+                    value="{{ query }}">
+                {% if active_category %}
+                <input type="hidden" name="category" value="{{ active_category }}">
+                {% endif %}
+                <button class="btn btn-dark rounded-end-pill px-4" type="submit">Найти</button>
+            </div>
+        </form>
+
+        <!-- Сетка товаров -->
+        <div class="row g-3">
+            {% for product in products %}
+            <div class="col-md-6 col-lg-3">
+                <div class="card product-card h-100 border-0 shadow-sm rounded-3"
+                    onclick="location.href='{% url 'product' product.id %}'">
+                    {% if product.image_url %}
+                    <img src="{{ product.image_url }}" class="card-img-top product-img rounded-top-3"
+                        alt="{{ product.title }}" loading="lazy">
+                    {% else %}
+                    <div class="card-img-top product-img-placeholder rounded-top-3">
+                        <span>Нет фото</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="card-body d-flex flex-column justify-content-between p-3">
+                        <div>
+                            <h6 class="card-title fw-bold mb-1">{{ product.title }}</h6>
+                            <p class="card-text text-muted small mb-0">Автор: {{ product.author }}</p>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="fw-bold fs-6">{{ product.price }} ₽</span>
+
+                            {% if cart_items_count|get:product.id %}
+                            <!-- Товар в корзине - показываем счётчик -->
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{% url 'update_cart_item' product.id 'remove' %}" class="btn btn-outline-dark"
+                                    onclick="event.stopPropagation()">−</a>
+                                <button type="button" class="btn btn-dark text-white" disabled
+                                    onclick="event.stopPropagation()">{{ cart_items_count|get:product.id }}</button>
+                                <a href="{% url 'update_cart_item' product.id 'add' %}" class="btn btn-outline-dark"
+                                    onclick="event.stopPropagation()">+</a>
+                            </div>
+                            {% else %}
+                            <!-- Товар не в корзине - показываем кнопку -->
+                            {% if current_user and current_user.role.name != 'Продавец' %}
+                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-dark btn-sm px-3"
+                                onclick="event.stopPropagation()">В корзину</a>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-3 text-center py-5 bg-light">
+                    <div class="card-body">
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

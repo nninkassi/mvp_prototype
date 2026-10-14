@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+{% block title %}Оформление заказа{% endblock %}
+
+{% block content %}
+<h1 class="fw-bold mb-5">Оформление заказа</h1>
+
+<div class="row g-5">
+    <!-- Левая колонка: Форма -->
+    <div class="col-lg-6">
+        <h5 class="fw-bold mb-3">Адрес доставки</h5>
+        <form method="post" action="{% url 'checkout' %}">
+            {% csrf_token %}
+
+            <!-- Email привязан к аккаунту (логика сохранена)
+            <input type="hidden" name="email" value="{{ user.email }}">
+            <p class="text-muted small mb-3">Заказ будет привязан к: {{ user.email }}</p> -->
+
+            <!-- Адрес (сохранён name="address" для бэкенда) -->
+            <textarea name="address" class="form-control mb-4 rounded-3" rows="3" required
+                placeholder="Город, улица, дом, квартира"></textarea>
+
+            <!-- <div class="mb-4">
+                <label class="form-label text-muted small">Способ оплаты</label>
+                <div class="form-control bg-light rounded-3 text-muted border-0">Банковская карта (онлайн)</div>
+                <small class="text-muted d-block mt-1">В тестовом режиме оплата проходит автоматически</small>
+            </div> -->
+
+            <button type="submit" class="btn btn-dark btn-lg w-100 rounded-3 mt-2">Оплатить заказ</button>
+        </form>
+    </div>
+
+    <!-- Правая колонка: Состав заказа -->
+    <div class="col-lg-6">
+        {% if cart_items %}
+        <div class="mb-4">
+            {% for item in cart_items %}
+            <div class="d-flex align-items-center py-3 border-bottom">
+                <!-- Миниатюра -->
+                <div class="bg-light rounded-2 d-flex align-items-center justify-content-center"
+                    style="width: 64px; height: 64px; flex-shrink: 0;">
+                    {% if item.product.image_url %}
+                    <img src="{{ item.product.image_url }}" alt="{{ item.product.title }}"
+                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+                    {% else %}
+                    <span class="text-muted small">Нет фото</span>
+                    {% endif %}
+                </div>
+
+                <!-- Информация о товаре -->
+                <div class="ms-3 flex-grow-1">
+                    <h6 class="fw-bold mb-0">{{ item.product.title }}</h6>
+                    <small class="text-muted d-block">{{ item.product.author }}</small>
+                    <div class="text-muted small">{{ item.quantity }} шт.</div>
+                </div>
+
+                <!-- Цена -->
+                <div class="fw-bold text-end">{{ item.total_price }} ₽</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Итого -->
+        <div class="pt-2">
+            <h6 class="fw-normal border-bottom pb-2 mb-2">Сумма заказа</h6>
+            <div class="fs-5 fw-bold">{{ total }} ₽</div>
+        </div>
+        {% else %}
+        <p class="text-muted mt-4">Корзина пуста</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="text-center mt-5 mb-5">
+    <a href="{% url 'cart' %}" class="text-decoration-none text-muted small">← Вернуться в корзину для
+        редактирования</a>
+</div>
+{% endblock %}

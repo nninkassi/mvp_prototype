@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Заказ оплачен — Книжный магазин{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Сообщение об успешной оплате -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="text-center mb-5">
+                <h1 class="display-6 fw-bold mb-3">Заказ успешно оформлен</h1>
+                <p class="lead text-muted mb-4">
+                    Номер заказа: <strong class="text-primary">{{ order_id }}</strong>
+                </p>
+
+                {% if transaction_id %}
+                {% endif %}
+
+                <div class="mb-4">
+                    <p class="text-muted mb-1">Подтверждение отправлено на ваш email.</p>
+                </div>
+
+                <a href="{% url 'profile' %}" class="btn btn-outline-dark btn-lg">
+                    Мои заказы
+                </a>
+                <a href="{% url 'catalog' %}" class="btn btn-dark btn-lg">
+                    Продолжить покупки
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Детали заказа (опционально) -->
+    {% if order_items %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">📋 Состав заказа</h5>
+                </div>
+                <div class="card-body">
+                    {% for item in order_items %}
+                    <div
+                        class="d-flex justify-content-between align-items-center py-2 {% if not forloop.last %}border-bottom{% endif %}">
+                        <div>
+                            <h6 class="mb-0">{{ item.product.title }}</h6>
+                            <small class="text-muted">{{ item.product.author }}</small>
+                            <span class="text-muted ms-2">× {{ item.quantity }}</span>
+                        </div>
+                        <div class="fw-bold">{{ item.total_price }} ₽</div>
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 mt-3 border-top">
+                        <span class="fs-5 fw-bold">Итого:</span>
+                        <span class="fs-4 fw-bold text-primary">{{ total }} ₽</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
